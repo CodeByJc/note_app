@@ -28,3 +28,30 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 }
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Test App')),
+        body: Center(
+          child: Text('$_counter', style: const TextStyle(fontSize: 24)),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => setState(() => _counter++),
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
+  }
+}
