@@ -92,70 +92,79 @@ class _NotesHomeState extends State<NotesHome> {
           ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _notes.isEmpty
-          ? const Center(child: Text('No notes yet. Tap + to add one.'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: _notes.length,
-              itemBuilder: (context, i) {
-                final note = _notes[i];
-                return Dismissible(
-                  key: ValueKey('$note-$i'),
-                  background: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(left: 16),
-                    child: const Icon(Icons.delete),
-                  ),
-                  secondaryBackground: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 16),
-                    child: const Icon(Icons.delete),
-                  ),
-                  onDismissed: (_) async => _deleteNote(i),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Card(
-                        child: ListTile(
-                          title: Text(
-                            note,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () => _editNote(i),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () async {
-                              final choice = await showMenu<String>(
-                                context: context,
-                                position: const RelativeRect.fromLTRB(
-                                  1000,
-                                  80,
-                                  8,
-                                  0,
-                                ),
-                                items: const [
-                                  PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Text('Delete'),
-                                  ),
-                                ],
-                              );
-                              if (choice == 'edit') _editNote(i);
-                              if (choice == 'delete') _deleteNote(i);
-                            },
-                          ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _notes.isEmpty
+                ? const Center(child: Text('No notes yet. Tap + to add one.'))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: _notes.length,
+                    itemBuilder: (context, i) {
+                      final note = _notes[i];
+                      return Dismissible(
+                        key: ValueKey('$note-$i'),
+                        background: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 16),
+                          child: const Icon(Icons.delete),
                         ),
-                      ),
-                      const FooterText(),
-                    ],
+                        secondaryBackground: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 16),
+                          child: const Icon(Icons.delete),
+                        ),
+                        onDismissed: (_) async => _deleteNote(i),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Card(
+                              child: ListTile(
+                                title: Text(
+                                  note,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                onTap: () => _editNote(i),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.more_vert),
+                                  onPressed: () async {
+                                    final choice = await showMenu<String>(
+                                      context: context,
+                                      position: const RelativeRect.fromLTRB(
+                                        1000,
+                                        80,
+                                        8,
+                                        0,
+                                      ),
+                                      items: const [
+                                        PopupMenuItem(
+                                          value: 'edit',
+                                          child: Text('Edit'),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                    );
+                                    if (choice == 'edit') _editNote(i);
+                                    if (choice == 'delete') _deleteNote(i);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+          ),
+          const FooterText(),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addNote,
         icon: const Icon(Icons.add),
