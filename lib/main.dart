@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'footer.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +16,7 @@ class NotesApp extends StatelessWidget {
     return MaterialApp(
       title: 'Notes',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.indigo,
-      ),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
       home: const NotesHome(),
     );
   }
@@ -64,7 +62,11 @@ class _NotesHomeState extends State<NotesHome> {
   }
 
   Future<void> _editNote(int index) async {
-    final text = await _promptNote(context, title: 'Edit Note', initial: _notes[index]);
+    final text = await _promptNote(
+      context,
+      title: 'Edit Note',
+      initial: _notes[index],
+    );
     if (text == null) return;
     setState(() => _notes[index] = text.trim());
     await _saveNotes();
@@ -93,26 +95,29 @@ class _NotesHomeState extends State<NotesHome> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _notes.isEmpty
-              ? const Center(child: Text('No notes yet. Tap + to add one.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: _notes.length,
-                  itemBuilder: (context, i) {
-                    final note = _notes[i];
-                    return Dismissible(
-                      key: ValueKey('$note-$i'),
-                      background: Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(left: 16),
-                        child: const Icon(Icons.delete),
-                      ),
-                      secondaryBackground: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 16),
-                        child: const Icon(Icons.delete),
-                      ),
-                      onDismissed: (_) async => _deleteNote(i),
-                      child: Card(
+          ? const Center(child: Text('No notes yet. Tap + to add one.'))
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: _notes.length,
+              itemBuilder: (context, i) {
+                final note = _notes[i];
+                return Dismissible(
+                  key: ValueKey('$note-$i'),
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 16),
+                    child: const Icon(Icons.delete),
+                  ),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(Icons.delete),
+                  ),
+                  onDismissed: (_) async => _deleteNote(i),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Card(
                         child: ListTile(
                           title: Text(
                             note,
@@ -125,10 +130,18 @@ class _NotesHomeState extends State<NotesHome> {
                             onPressed: () async {
                               final choice = await showMenu<String>(
                                 context: context,
-                                position: const RelativeRect.fromLTRB(1000, 80, 8, 0),
+                                position: const RelativeRect.fromLTRB(
+                                  1000,
+                                  80,
+                                  8,
+                                  0,
+                                ),
                                 items: const [
                                   PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                  PopupMenuItem(value: 'delete', child: Text('Delete')),
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('Delete'),
+                                  ),
                                 ],
                               );
                               if (choice == 'edit') _editNote(i);
@@ -137,9 +150,12 @@ class _NotesHomeState extends State<NotesHome> {
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                      const FooterText(),
+                    ],
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addNote,
         icon: const Icon(Icons.add),
@@ -149,8 +165,11 @@ class _NotesHomeState extends State<NotesHome> {
   }
 }
 
-Future<String?> _promptNote(BuildContext context,
-    {required String title, String initial = ''}) async {
+Future<String?> _promptNote(
+  BuildContext context, {
+  required String title,
+  String initial = '',
+}) async {
   final controller = TextEditingController(text: initial);
   return showDialog<String>(
     context: context,
@@ -163,8 +182,14 @@ Future<String?> _promptNote(BuildContext context,
         decoration: const InputDecoration(hintText: 'Type your note'),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, controller.text),
+          child: const Text('Save'),
+        ),
       ],
     ),
   );
@@ -176,8 +201,14 @@ Future<bool?> _confirm(BuildContext context, String message) {
     builder: (context) => AlertDialog(
       content: Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
-        FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Yes')),
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('No'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Yes'),
+        ),
       ],
     ),
   );
